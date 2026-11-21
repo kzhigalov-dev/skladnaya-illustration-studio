@@ -1,0 +1,758 @@
+{
+  "passed": 32,
+  "refusals": 6,
+  "rows": [
+    {
+      "kind": "literal",
+      "title": "Карман для купюр в новом портмоне",
+      "acceptable": [
+        "wallet"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "finance",
+        "theme": "кошелёк",
+        "main": "wallet",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "Зажим настольной лампы на краю стола",
+      "acceptable": [
+        "lamp"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "lighting",
+        "theme": "освещение",
+        "main": "lamp",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "Плёнка на экран сенсорного телефона",
+      "acceptable": [
+        "phone"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "communication",
+        "theme": "сенсорный экран",
+        "main": "phone",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "Бумажная закладка для толстого сборника",
+      "acceptable": [
+        "book"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "reading",
+        "theme": "закладка",
+        "main": "book",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "Где у гарнитуры регулятор громкости",
+      "acceptable": [
+        "phones"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "communication",
+        "theme": "регулятор громкости",
+        "main": "phone",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": false
+    },
+    {
+      "kind": "literal",
+      "title": "Подбираем картинку к набору мозаики",
+      "acceptable": [
+        "puzzle"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "puzzle",
+        "theme": "мозаика",
+        "main": "puzzle",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "Срезанные гладиолусы в вазе к юбилею",
+      "acceptable": [
+        "flowers"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "flowers",
+        "theme": "цветы к юбилею",
+        "main": "flowers",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "Нумизмат показывает старую копейку",
+      "acceptable": [
+        "coin"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "finance",
+        "theme": "старая монета",
+        "main": "coin",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "Папка с клапаном для чеков",
+      "acceptable": [
+        "folder"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "documents",
+        "theme": "организация документов",
+        "main": "folder",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "Подпись клиента синей шариковой ручкой",
+      "acceptable": [
+        "pen"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "writing",
+        "theme": "запись подпись",
+        "main": "pen",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "В какое отделение сложить карточки и наличные",
+      "acceptable": [
+        "wallet"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "finance",
+        "theme": "организация денег",
+        "main": "wallet",
+        "secondary": "wallet",
+        "secondaryRole": "main",
+        "exclude": [
+          "coin"
+        ],
+        "layout": "diagonal"
+      },
+      "okay": true
+    },
+    {
+      "kind": "literal",
+      "title": "Маленький фонарь для чтения у кровати",
+      "acceptable": [
+        "lamp",
+        "book"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "lighting",
+        "theme": "освещение для чтения",
+        "main": "lamp",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Где заканчиваются шум и чужие разговоры",
+      "acceptable": [
+        "phones"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "audio",
+        "theme": "шум и тишина",
+        "main": "phones",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Тепло в комнате можно зажечь одним движением",
+      "acceptable": [
+        "lamp"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "lighting",
+        "theme": "освещение",
+        "main": "lamp",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Хочу, чтобы весна стояла на столе круглый год",
+      "acceptable": [
+        "flowers"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "flowers",
+        "theme": "весна на столе",
+        "main": "flowers",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Принести живые краски в пасмурный день",
+      "acceptable": [
+        "flowers",
+        "lamp"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "lighting",
+        "theme": "озарение",
+        "main": "lamp",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Уложить историю в слова, пока помню детали",
+      "acceptable": [
+        "pen",
+        "book"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "reading",
+        "theme": "история, детали, запись",
+        "main": "book",
+        "secondary": "pen",
+        "secondaryRole": "main",
+        "exclude": [],
+        "layout": "diagonal"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "В письме видно, как бежит время",
+      "acceptable": [
+        "pen",
+        "book"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "writing",
+        "theme": "время в письме",
+        "main": "pen",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Я прочла всю страницу вслух для тебя",
+      "acceptable": [
+        "book"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "reading",
+        "theme": "чтение",
+        "main": "book",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "К следующему развороту я стану чуть смелее",
+      "acceptable": [
+        "book",
+        "pen"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "reading",
+        "theme": "рост, смелость",
+        "main": "book",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Дотянуться до дома через тысячи вёрст",
+      "acceptable": [
+        "phone",
+        "phones"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "communication",
+        "theme": "дистанция и связь",
+        "main": "phone",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Маленькое окно, в котором живут друзья",
+      "acceptable": [
+        "phone"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "unsupported",
+        "theme": "дружба через окно",
+        "main": "none",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": false
+    },
+    {
+      "kind": "metaphor",
+      "title": "Сначала соберём края, остальное займёт своё место",
+      "acceptable": [
+        "puzzle"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "puzzle",
+        "theme": "решение задач",
+        "main": "puzzle",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Найти кусочек, которого не хватает замыслу",
+      "acceptable": [
+        "puzzle"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "puzzle",
+        "theme": "недостающая деталь",
+        "main": "puzzle",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "У жизни есть бумаги, которые нас переживут",
+      "acceptable": [
+        "folder",
+        "pen",
+        "book"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "documents",
+        "theme": "документы и наследие",
+        "main": "folder",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "У своих решений тоже должен быть архив",
+      "acceptable": [
+        "folder",
+        "pen"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "documents",
+        "theme": "архив решений",
+        "main": "folder",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "Оставлять рубль будущему себе",
+      "acceptable": [
+        "wallet",
+        "coin"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "finance",
+        "theme": "сбережения",
+        "main": "coin",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "metaphor",
+      "title": "У каждого расхода свой карман",
+      "acceptable": [
+        "wallet",
+        "coin"
+      ],
+      "excluded": [],
+      "result": {
+        "topic": "finance",
+        "theme": "расходы и карман",
+        "main": "wallet",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Поездка с книгой и ручкой, никаких смартфонов, даже запасного",
+      "acceptable": [
+        "book",
+        "pen"
+      ],
+      "excluded": [
+        "phone"
+      ],
+      "result": {
+        "topic": "reading",
+        "theme": "чтение и запись",
+        "main": "book",
+        "secondary": "pen",
+        "secondaryRole": "main",
+        "exclude": [
+          "phone"
+        ],
+        "layout": "diagonal"
+      },
+      "okay": true
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Записать впечатления без наушников и фоновой лампы",
+      "acceptable": [
+        "pen",
+        "book"
+      ],
+      "excluded": [
+        "phones",
+        "lamp"
+      ],
+      "result": {
+        "topic": "writing",
+        "theme": "запись впечатлений",
+        "main": "pen",
+        "secondary": "folder",
+        "secondaryRole": "main",
+        "exclude": [
+          "phones",
+          "lamp"
+        ],
+        "layout": "diagonal"
+      },
+      "okay": true
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Оставить из денег только мелочь, без портмоне",
+      "acceptable": [
+        "coin"
+      ],
+      "excluded": [
+        "wallet"
+      ],
+      "result": {
+        "topic": "finance",
+        "theme": "мелочь",
+        "main": "coin",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [
+          "wallet"
+        ],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Поздравление по телефону, букет не нужен",
+      "acceptable": [
+        "phone"
+      ],
+      "excluded": [
+        "flowers"
+      ],
+      "result": {
+        "topic": "communication",
+        "theme": "поздравление по телефону",
+        "main": "phone",
+        "secondary": "flowers",
+        "secondaryRole": "background",
+        "exclude": [
+          "flowers"
+        ],
+        "layout": "diagonal"
+      },
+      "okay": true
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Упорядочить чеки, но не показывать мелочь",
+      "acceptable": [
+        "folder",
+        "pen"
+      ],
+      "excluded": [
+        "coin"
+      ],
+      "result": {
+        "topic": "documents",
+        "theme": "организация чеков",
+        "main": "folder",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [
+          "coin"
+        ],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Сложить пазл без папки и книги",
+      "acceptable": [
+        "puzzle"
+      ],
+      "excluded": [
+        "folder",
+        "book"
+      ],
+      "result": {
+        "topic": "puzzle",
+        "theme": "соединение частей",
+        "main": "puzzle",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [
+          "folder",
+          "book"
+        ],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "unfit",
+      "title": "Балансировочный клапан для труб тёплого пола",
+      "acceptable": [],
+      "excluded": [],
+      "result": {
+        "topic": "unsupported",
+        "theme": "",
+        "main": "none",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "unfit",
+      "title": "Чем обработать срез яблони после обрезки",
+      "acceptable": [],
+      "excluded": [],
+      "result": {
+        "topic": "unsupported",
+        "theme": "",
+        "main": "none",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "unfit",
+      "title": "Предельное давление у кромки обсадной трубы",
+      "acceptable": [],
+      "excluded": [],
+      "result": {
+        "topic": "unsupported",
+        "theme": "",
+        "main": "none",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "unfit",
+      "title": "Зимняя резина для поездок по глубокому снегу",
+      "acceptable": [],
+      "excluded": [],
+      "result": {
+        "topic": "unsupported",
+        "theme": "поездки в снег",
+        "main": "none",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "unfit",
+      "title": "Как убрать сорняки между ростками картофеля",
+      "acceptable": [],
+      "excluded": [],
+      "result": {
+        "topic": "unsupported",
+        "theme": "",
+        "main": "none",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    },
+    {
+      "kind": "unfit",
+      "title": "Содержание белка в ржаной муке",
+      "acceptable": [],
+      "excluded": [],
+      "result": {
+        "topic": "unsupported",
+        "theme": "",
+        "main": "none",
+        "secondary": "none",
+        "secondaryRole": "background",
+        "exclude": [],
+        "layout": "cluster"
+      },
+      "okay": true
+    }
+  ]
+}

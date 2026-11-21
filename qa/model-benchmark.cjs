@@ -31,7 +31,7 @@ async function analyze(title) {
   });
   if (!response.ok) throw new Error('Ollama returned ' + response.status + ': ' + await response.text());
   const completion = await response.json();
-  return decode(completion.message?.content, excluded);
+  return decode(completion.message?.content, excluded,title);
 }
 
 async function main() {

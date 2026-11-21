@@ -1,5 +1,5 @@
 'use strict';
-importScripts('./semantic-protocol.js');
+importScripts('./planner.js','./semantic-protocol.js');
 let engine = null;
 self.onmessage = async ({data:{id,input,excluded}}) => {
   const report = update => self.postMessage({id,type:'progress',update});

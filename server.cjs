@@ -43,7 +43,7 @@ http.createServer(async(req,res)=>{
         });
         if(!result.ok) throw Error('Не удалось выполнить анализ в Ollama.');
         const output=await result.json();
-        return json(res,200,{plan:protocol.decode(output.message?.content,excluded)});
+        return json(res,200,{plan:protocol.decode(output.message?.content,excluded,input)});
       } finally {clearTimeout(timeout);}
     } catch(error) {
       if(!res.destroyed) return json(res,400,{error:error.message});

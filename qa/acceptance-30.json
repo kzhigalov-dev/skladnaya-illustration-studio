@@ -1,0 +1,242 @@
+[
+  {
+    "kind": "literal",
+    "title": "Новый том рассказов на прикроватной тумбочке",
+    "acceptable": [
+      "book"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "literal",
+    "title": "Подписываем открытку перьевой ручкой",
+    "acceptable": [
+      "pen"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "literal",
+    "title": "Храним договоры в папке-регистраторе",
+    "acceptable": [
+      "folder"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "literal",
+    "title": "Смартфон с большим экраном для видеосвязи",
+    "acceptable": [
+      "phone"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "literal",
+    "title": "Проводная гарнитура для прослушивания записей",
+    "acceptable": [
+      "phones"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "literal",
+    "title": "Настольный светильник с гибкой ножкой",
+    "acceptable": [
+      "lamp"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "literal",
+    "title": "Букет белых роз в подарок коллеге",
+    "acceptable": [
+      "flowers"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "literal",
+    "title": "Собираем мозаику из тысячи фрагментов",
+    "acceptable": [
+      "puzzle"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "literal",
+    "title": "Бумажник для банковских карт и купюр",
+    "acceptable": [
+      "wallet"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "literal",
+    "title": "Десятирублёвая монета в коллекции",
+    "acceptable": [
+      "coin"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Нырнуть в историю и прожить чужую жизнь",
+    "acceptable": [
+      "book"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Поймать мысль до того, как она исчезнет",
+    "acceptable": [
+      "pen"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Бумажный порядок вместо хаоса на столе",
+    "acceptable": [
+      "folder"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Услышать маму, когда между нами океан",
+    "acceptable": [
+      "phone",
+      "phones"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Отгородиться от метро любимым плейлистом",
+    "acceptable": [
+      "phones"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Маленькое солнце для долгого рабочего вечера",
+    "acceptable": [
+      "lamp"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Сказать спасибо лепестками",
+    "acceptable": [
+      "flowers"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Из отдельных кусочков рождается общая картина",
+    "acceptable": [
+      "puzzle"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Поставить заслон ненужным тратам",
+    "acceptable": [
+      "wallet",
+      "coin"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "metaphor",
+    "title": "Каждый рубль приближает к большой мечте",
+    "acceptable": [
+      "coin",
+      "wallet"
+    ],
+    "excluded": []
+  },
+  {
+    "kind": "ambiguous",
+    "title": "Плейлист для прогулки, без телефона",
+    "acceptable": [
+      "phones"
+    ],
+    "excluded": [
+      "phone"
+    ]
+  },
+  {
+    "kind": "ambiguous",
+    "title": "Записать план дня, книгу и папку не добавлять",
+    "acceptable": [
+      "pen"
+    ],
+    "excluded": [
+      "book",
+      "folder"
+    ]
+  },
+  {
+    "kind": "ambiguous",
+    "title": "Копилка из монет, кошелёк исключить",
+    "acceptable": [
+      "coin"
+    ],
+    "excluded": [
+      "wallet"
+    ]
+  },
+  {
+    "kind": "ambiguous",
+    "title": "Букет для именинницы, без звонков",
+    "acceptable": [
+      "flowers"
+    ],
+    "excluded": [
+      "phone"
+    ]
+  },
+  {
+    "kind": "unfit",
+    "title": "Замена тормозных колодок на велосипеде",
+    "acceptable": [],
+    "excluded": []
+  },
+  {
+    "kind": "unfit",
+    "title": "Как замесить тесто для ржаного хлеба",
+    "acceptable": [],
+    "excluded": []
+  },
+  {
+    "kind": "unfit",
+    "title": "Прогноз осадков на ближайшую неделю",
+    "acceptable": [],
+    "excluded": []
+  },
+  {
+    "kind": "unfit",
+    "title": "Обрезка корней у яблони",
+    "acceptable": [],
+    "excluded": []
+  },
+  {
+    "kind": "unfit",
+    "title": "Выбор диаметра канализационной трубы",
+    "acceptable": [],
+    "excluded": []
+  },
+  {
+    "kind": "unfit",
+    "title": "Техника плавания брассом",
+    "acceptable": [],
+    "excluded": []
+  }
+]

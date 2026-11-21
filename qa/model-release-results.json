@@ -1,0 +1,924 @@
+{
+  "summary": {
+    "model": "qwen3:8b",
+    "byKind": {
+      "literal": {
+        "total": 12,
+        "lexical": 12,
+        "model": 12
+      },
+      "metaphor": {
+        "total": 16,
+        "lexical": 6,
+        "model": 15
+      },
+      "ambiguous": {
+        "total": 6,
+        "lexical": 5,
+        "model": 6
+      },
+      "unfit": {
+        "total": 6,
+        "lexical": 6,
+        "model": 6
+      }
+    },
+    "errors": 0,
+    "coldMs": 1731,
+    "warmMedianMs": 1043,
+    "warmP95Ms": 1660
+  },
+  "rows": [
+    {
+      "kind": "literal",
+      "title": "Карман для купюр в новом портмоне",
+      "acceptable": [
+        "wallet"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1730.7343,
+      "plan": {
+        "items": [
+          {
+            "key": "wallet",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "кошелёк",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Зажим настольной лампы на краю стола",
+      "acceptable": [
+        "lamp"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1113.656,
+      "plan": {
+        "items": [
+          {
+            "key": "lamp",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "освещение",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Плёнка на экран сенсорного телефона",
+      "acceptable": [
+        "phone"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1086.5639,
+      "plan": {
+        "items": [
+          {
+            "key": "phone",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "сенсорный экран",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Бумажная закладка для толстого сборника",
+      "acceptable": [
+        "book"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 994.1136999999999,
+      "plan": {
+        "items": [
+          {
+            "key": "book",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "закладка",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Где у гарнитуры регулятор громкости",
+      "acceptable": [
+        "phones"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1116.4251000000004,
+      "plan": {
+        "items": [
+          {
+            "key": "phones",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "громкость",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Подбираем картинку к набору мозаики",
+      "acceptable": [
+        "puzzle"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1043.2671,
+      "plan": {
+        "items": [
+          {
+            "key": "puzzle",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "мозаика",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Срезанные гладиолусы в вазе к юбилею",
+      "acceptable": [
+        "flowers"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1253.9196000000002,
+      "plan": {
+        "items": [
+          {
+            "key": "flowers",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "цветы к юбилею",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Нумизмат показывает старую копейку",
+      "acceptable": [
+        "coin"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1052.8333999999995,
+      "plan": {
+        "items": [
+          {
+            "key": "coin",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "деньги",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Папка с клапаном для чеков",
+      "acceptable": [
+        "folder"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1102.8562999999995,
+      "plan": {
+        "items": [
+          {
+            "key": "folder",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "организация документов",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Подпись клиента синей шариковой ручкой",
+      "acceptable": [
+        "pen"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1128.9449999999997,
+      "plan": {
+        "items": [
+          {
+            "key": "pen",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "подпись, ручка",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "В какое отделение сложить карточки и наличные",
+      "acceptable": [
+        "wallet"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1151.2915999999987,
+      "plan": {
+        "items": [
+          {
+            "key": "wallet",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "организация и хранение",
+        "layout": "diagonal",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "literal",
+      "title": "Маленький фонарь для чтения у кровати",
+      "acceptable": [
+        "lamp",
+        "book"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1045.4318999999996,
+      "plan": {
+        "items": [
+          {
+            "key": "lamp",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "освещение для чтения",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Где заканчиваются шум и чужие разговоры",
+      "acceptable": [
+        "phones"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1032.7392,
+      "plan": {
+        "items": [
+          {
+            "key": "phones",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "шум и тишина",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Тепло в комнате можно зажечь одним движением",
+      "acceptable": [
+        "lamp"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 969.2291000000005,
+      "plan": {
+        "items": [
+          {
+            "key": "lamp",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "освещение",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Хочу, чтобы весна стояла на столе круглый год",
+      "acceptable": [
+        "flowers"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1025.3966999999993,
+      "plan": {
+        "items": [
+          {
+            "key": "flowers",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "цветы на столе",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Принести живые краски в пасмурный день",
+      "acceptable": [
+        "flowers",
+        "lamp"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 968.4603999999999,
+      "plan": {
+        "items": [
+          {
+            "key": "lamp",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "озарение",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Уложить историю в слова, пока помню детали",
+      "acceptable": [
+        "pen",
+        "book"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 1085.0815000000002,
+      "plan": {
+        "items": [
+          {
+            "key": "book",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "история, воспоминания",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "В письме видно, как бежит время",
+      "acceptable": [
+        "pen",
+        "book"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1031.147100000002,
+      "plan": {
+        "items": [
+          {
+            "key": "book",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "время и письмо",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Я прочла всю страницу вслух для тебя",
+      "acceptable": [
+        "book"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 931.3881000000001,
+      "plan": {
+        "items": [
+          {
+            "key": "book",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "чтение",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "К следующему развороту я стану чуть смелее",
+      "acceptable": [
+        "book",
+        "pen"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 980.8385000000017,
+      "plan": {
+        "items": [
+          {
+            "key": "book",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "рост, смелость",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Дотянуться до дома через тысячи вёрст",
+      "acceptable": [
+        "phone",
+        "phones"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 1031.1998999999996,
+      "plan": {
+        "items": [
+          {
+            "key": "phone",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "удалённое соединение",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Маленькое окно, в котором живут друзья",
+      "acceptable": [
+        "phone"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": false,
+      "elapsed": 1019.5412999999971,
+      "plan": {
+        "items": [],
+        "status": "empty",
+        "message": "Модель не нашла подходящий сюжет в библиотеке."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Сначала соберём края, остальное займёт своё место",
+      "acceptable": [
+        "puzzle"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 983.4724999999999,
+      "plan": {
+        "items": [
+          {
+            "key": "puzzle",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "решение задач",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Найти кусочек, которого не хватает замыслу",
+      "acceptable": [
+        "puzzle"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 1135.170399999999,
+      "plan": {
+        "items": [
+          {
+            "key": "puzzle",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "дополнение к замыслу",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "У жизни есть бумаги, которые нас переживут",
+      "acceptable": [
+        "folder",
+        "pen",
+        "book"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1044.7099999999991,
+      "plan": {
+        "items": [
+          {
+            "key": "folder",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "документы и наследие",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "У своих решений тоже должен быть архив",
+      "acceptable": [
+        "folder",
+        "pen"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 982.1219999999994,
+      "plan": {
+        "items": [
+          {
+            "key": "folder",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "архив решений",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "Оставлять рубль будущему себе",
+      "acceptable": [
+        "wallet",
+        "coin"
+      ],
+      "excluded": [],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 943.061099999999,
+      "plan": {
+        "items": [
+          {
+            "key": "wallet",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "сбережения",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "metaphor",
+      "title": "У каждого расхода свой карман",
+      "acceptable": [
+        "wallet",
+        "coin"
+      ],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1019.9462999999996,
+      "plan": {
+        "items": [
+          {
+            "key": "wallet",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "расходы и сбережения",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Поездка с книгой и ручкой, никаких смартфонов, даже запасного",
+      "acceptable": [
+        "book",
+        "pen"
+      ],
+      "excluded": [
+        "phone"
+      ],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1515.4392999999982,
+      "plan": {
+        "items": [
+          {
+            "key": "book",
+            "role": "main"
+          },
+          {
+            "key": "pen",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "чтение и запись",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Записать впечатления без наушников и фоновой лампы",
+      "acceptable": [
+        "pen",
+        "book"
+      ],
+      "excluded": [
+        "phones",
+        "lamp"
+      ],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1605.3030999999974,
+      "plan": {
+        "items": [
+          {
+            "key": "pen",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "запись впечатлений",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Оставить из денег только мелочь, без портмоне",
+      "acceptable": [
+        "coin"
+      ],
+      "excluded": [
+        "wallet"
+      ],
+      "lexicalPass": false,
+      "modelPass": true,
+      "elapsed": 1434.992299999998,
+      "plan": {
+        "items": [
+          {
+            "key": "coin",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "мелочь",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Поздравление по телефону, букет не нужен",
+      "acceptable": [
+        "phone"
+      ],
+      "excluded": [
+        "flowers"
+      ],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1660.4141000000018,
+      "plan": {
+        "items": [
+          {
+            "key": "phone",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "телефонное поздравление",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Упорядочить чеки, но не показывать мелочь",
+      "acceptable": [
+        "folder",
+        "pen"
+      ],
+      "excluded": [
+        "coin"
+      ],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1527.7286999999997,
+      "plan": {
+        "items": [
+          {
+            "key": "folder",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "организация чеков",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "ambiguous",
+      "title": "Сложить пазл без папки и книги",
+      "acceptable": [
+        "puzzle"
+      ],
+      "excluded": [
+        "folder",
+        "book"
+      ],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1665.5477000000028,
+      "plan": {
+        "items": [
+          {
+            "key": "puzzle",
+            "role": "main"
+          }
+        ],
+        "status": "ok",
+        "theme": "соединение частей",
+        "layout": "cluster",
+        "message": "Сюжет предложен моделью на устройстве."
+      }
+    },
+    {
+      "kind": "unfit",
+      "title": "Балансировочный клапан для труб тёплого пола",
+      "acceptable": [],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 1298.0762000000032,
+      "plan": {
+        "items": [],
+        "status": "empty",
+        "message": "Модель не нашла подходящий сюжет в библиотеке."
+      }
+    },
+    {
+      "kind": "unfit",
+      "title": "Чем обработать срез яблони после обрезки",
+      "acceptable": [],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 842.0662999999986,
+      "plan": {
+        "items": [],
+        "status": "empty",
+        "message": "Модель не нашла подходящий сюжет в библиотеке."
+      }
+    },
+    {
+      "kind": "unfit",
+      "title": "Предельное давление у кромки обсадной трубы",
+      "acceptable": [],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 841.1537000000026,
+      "plan": {
+        "items": [],
+        "status": "empty",
+        "message": "Модель не нашла подходящий сюжет в библиотеке."
+      }
+    },
+    {
+      "kind": "unfit",
+      "title": "Зимняя резина для поездок по глубокому снегу",
+      "acceptable": [],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 885.542300000001,
+      "plan": {
+        "items": [],
+        "status": "empty",
+        "message": "Модель не нашла подходящий сюжет в библиотеке."
+      }
+    },
+    {
+      "kind": "unfit",
+      "title": "Как убрать сорняки между ростками картофеля",
+      "acceptable": [],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 847.8021000000008,
+      "plan": {
+        "items": [],
+        "status": "empty",
+        "message": "Модель не нашла подходящий сюжет в библиотеке."
+      }
+    },
+    {
+      "kind": "unfit",
+      "title": "Содержание белка в ржаной муке",
+      "acceptable": [],
+      "excluded": [],
+      "lexicalPass": true,
+      "modelPass": true,
+      "elapsed": 844.4006000000008,
+      "plan": {
+        "items": [],
+        "status": "empty",
+        "message": "Модель не нашла подходящий сюжет в библиотеке."
+      }
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import argparse
 import base64
 import io
 import json
+import math
 import os
 import random
 import re
@@ -222,6 +223,82 @@ def verify_palette(page, scratch):
     assert color_tokens(inspect_svg(download(page, scratch / "invalid.svg"), 2)) == color_tokens(svg_after)
 
 
+def verify_manual_projection(page):
+    page.select_option("#format", index=0)
+    page.locator("#layers button").first.click()
+    page.click('[data-op="rotate"]')
+    page.click('[data-op="right"]')
+    original = snapshot(page)
+    page.select_option("#format", index=2)
+    projected = snapshot(page)
+    assert projected != original
+    page.select_option("#palette", index=1)
+    assert snapshot(page) == projected
+    page.reload()
+    expect(page.locator("#canvas")).to_have_attribute("viewBox", "0 0 800 1200")
+    expect(page.locator("#palette option:checked")).to_have_text("Абрикос")
+    assert snapshot(page) == projected, "The reprojected edit changed after reload"
+    page.select_option("#format", index=0)
+    restored = snapshot(page)
+    assert len(restored) == len(original)
+    numbers = re.compile(r"-?\d+(?:\.\d+)?(?:e[+-]?\d+)?")
+    for before, after in zip(original, restored, strict=True):
+        assert [before[k] for k in ("id", "key", "role")] == [after[k] for k in ("id", "key", "role")]
+        original_transform = list(map(float, numbers.findall(before["transform"])))
+        restored_transform = list(map(float, numbers.findall(after["transform"])))
+        assert all(math.isclose(a, b, abs_tol=1e-8)
+                   for a, b in zip(original_transform, restored_transform, strict=True)), (
+            f"Switching formats changed manual geometry from {before['transform']} to {after['transform']}"
+        )
+
+
+def delay_palette_read(page):
+    page.evaluate("""() => {
+        window.releasePaletteRead = null;
+        window.originalFileText = File.prototype.text;
+        File.prototype.text = function () {
+            const file = this;
+            return new Promise((resolve, reject) => {
+                window.releasePaletteRead = () => window.originalFileText.call(file).then(resolve, reject);
+            });
+        };
+    }""")
+    page.set_input_files("#upload", ROOT / "palette.json")
+    page.wait_for_function("typeof window.releasePaletteRead === 'function'")
+
+
+def resume_palette_read(page):
+    page.evaluate("""async () => {
+        await window.releasePaletteRead();
+        File.prototype.text = window.originalFileText;
+    }""")
+
+
+def verify_palette_race(page):
+    build_scene(page, 1, "Монета")
+    palette_count = page.locator("#palette option").count()
+    delay_palette_read(page)
+    page.click('#library button[data-key="book"]')
+    expect(page.locator("#layout-dialog")).to_be_visible()
+    resume_palette_read(page)
+    expect(page.locator("#palette-dialog")).to_be_visible()
+    page.click("#apply-palette")
+    page.wait_for_function("paletteDraft === null")
+    page.click("#apply-layout")
+    page.wait_for_function("layoutDraft === null")
+    expect(page.locator("#palette option")).to_have_count(palette_count + 1)
+    assert [layer["key"] for layer in snapshot(page)] == ["coin", "book"]
+
+    delay_palette_read(page)
+    page.click("#palette-edit")
+    expect(page.locator("#palette-name")).to_have_value("Своя палитра")
+    resume_palette_read(page)
+    expect(page.locator("#palette-name")).to_have_value("Своя палитра")
+    page.click("#cancel-palette")
+    page.wait_for_function("paletteDraft === null")
+    expect(page.locator("#palette option")).to_have_count(palette_count + 1)
+
+
 def verify_browser(browser, scratch):
     context = browser.new_context(viewport={"width": 1440, "height": 960}, device_scale_factor=1)
     page = context.new_page()
@@ -247,14 +324,18 @@ def verify_browser(browser, scratch):
     page.reload()
     assert snapshot(page) == draft, "Scene lost after reload"
     expect(page.locator("#palette option:checked")).to_have_text("Шалфей")
+    verify_manual_projection(page)
+    verify_palette_race(page)
     page.set_viewport_size({"width": 390, "height": 844})
     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+    page.select_option("#format", index=2)
     build_scene(page, 1, "Книга, папка")
     inspect_svg(download(page, scratch / "small-screen.svg"), 2, ["book", "folder"])
     assert not errors, errors
     assert not external, external
     context.close()
-    print("PASS: title exclusions, explicit quantities/forms, pointer and transforms, history and reload, three layouts, S/L normalization, palette preview/import, mobile and editable SVG.")
+    print("PASS: title exclusions, explicit quantities/forms, pointer, history, layout previews, S/L normalization, "
+          "palette import and races, manual format round-trip after reload, mobile and editable SVG.")
 
 
 def rasterize_svg(page, path):

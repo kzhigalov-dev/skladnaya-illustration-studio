@@ -1,6 +1,11 @@
 'use strict';
 
-const fixtures = { '--second': './held-out-v2.json', '--third': './held-out-v3.json', '--final': './held-out-final.json' };
+const fixtures = {
+  '--second': './held-out-v2.json',
+  '--third': './held-out-v3.json',
+  '--final': './held-out-final.json',
+  '--paraphrase': './paraphrase-final.json',
+};
 const requested = process.argv.find(arg => Object.hasOwn(fixtures, arg));
 const cases = require(fixtures[requested] || './held-out.json');
 const expectedKinds = ['literal', 'metaphor', 'ambiguous', 'unfit'];
@@ -25,4 +30,4 @@ for (const test of cases) {
 const representable = expectedKinds.slice(0, 3).reduce((sum, kind) => sum + totals[kind].passed, 0);
 console.log(JSON.stringify(totals, null, 2));
 console.log('First suggestion: %d/34. Appropriate no-result: %d/6.', representable, totals.unfit.passed);
-if (process.argv.includes('--gate') && (representable < 30 || totals.unfit.passed < 5)) process.exitCode = 1;
+if (process.argv.includes('--gate') && (representable !== 34 || totals.unfit.passed !== 6)) process.exitCode = 1;

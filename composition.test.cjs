@@ -85,3 +85,13 @@ test('rotated and repeated subjects stay inside the canvas and leave the text zo
     }
   }
 });
+
+test('the main subject survives layer reordering independently of paint order', () => {
+  const layers = [item('phone', 2), item('book', 1)];
+  const options = {width:1200, height:630, preserveOrder:true, heroId:1};
+  assert.equal(compose(layers, options).heroId, 1);
+  assert.deepEqual(compose(layers, options).order, [2, 1]);
+  layers[1].role = 'background';
+  assert.equal(compose(layers, options).heroId, 2);
+  assert.equal(compose([layers[0]], options).heroId, 2);
+});

@@ -100,7 +100,7 @@ function arrange(current, variant) {
     const heroIndex = input.findIndex(item => item.id === current.heroId && item.role === 'main');
     if (heroIndex > 0) input.unshift(input.splice(heroIndex,1)[0]);
   }
-  const layout = composition.compose(input, {width, height, variant, preserveOrder:current.ordered});
+  const layout = composition.compose(input, {width, height, variant, preserveOrder:current.ordered, heroId:current.heroId});
   const positions = new Map(layout.items.map(item => [item.id, item]));
   const byId = new Map(current.objects.map(item => [item.id, {...item, ...positions.get(item.id)}]));
   current.objects = layout.order.map(id => byId.get(id));
@@ -108,6 +108,7 @@ function arrange(current, variant) {
   current.scale = layout.scale;
   current.variant = variant;
   current.manual = false;
+  delete current.manualProjection;
 }
 
 function renderArt(root, current, {editor = false, palette = currentPalette(current)} = {}) {
@@ -360,6 +361,7 @@ function addFromLibrary(key) {
     [item.x,item.y] = best;
     current.objects.push(item);
     current.manual = true;
+    delete current.manualProjection;
   }, 'Добавлен предмет «' + catalog[key].name + '».');
 }
 
@@ -391,23 +393,33 @@ function operate(operation) {
       if (operation === 'remove') current.selected = current.objects[Math.min(index,current.objects.length-1)]?.id ?? 0;
     }
     current.manual = true;
+    delete current.manualProjection;
   }, offsets[operation] ? 'Предмет «' + label + '» перемещён.' : '');
 }
 
 function setFormat(format) {
   change(current => {
     const [oldWidth,oldHeight] = dimensions(current);
+    if (current.manual && !current.manualProjection) {
+      current.manualProjection = {
+        width:oldWidth, height:oldHeight, scale:current.scale,
+        positions:current.objects.map(({id,x,y}) => ({id,x,y}))
+      };
+    }
     current.format = format;
     if (!current.manual) {
       arrange(current,current.variant);
       return;
     }
     const [width,height] = dimensions(current);
-    const factor = Math.min(width / oldWidth, height / oldHeight);
-    current.scale *= factor;
+    const baseline = current.manualProjection;
+    const factor = Math.min(width / baseline.width, height / baseline.height);
+    current.scale = baseline.scale * factor;
+    const positions = new Map(baseline.positions.map(item => [item.id,item]));
     for (const item of current.objects) {
-      item.x = width/2 + (item.x-oldWidth/2)*factor;
-      item.y = height/2 + (item.y-oldHeight/2)*factor;
+      const original = positions.get(item.id);
+      item.x = width/2 + (original.x-baseline.width/2)*factor;
+      item.y = height/2 + (original.y-baseline.height/2)*factor;
     }
   });
 }
@@ -496,6 +508,7 @@ canvas.onpointermove = event => {
 canvas.onlostpointercapture = () => {
   if (drag?.moved) {
     scene.manual = true;
+    delete scene.manualProjection;
     remember(drag.before);
     status('Предмет перемещён.');
   }
@@ -536,14 +549,21 @@ $('vary').onclick = () => openLayout();
 $('layout-dialog').onclose = () => {
   if ($('layout-dialog').returnValue === 'apply') {
     change(current => {
-      if (layoutSource !== current) Object.assign(current,layoutSource);
+      if (layoutSource !== current) {
+        current.objects = layoutSource.objects;
+        current.nextId = layoutSource.nextId;
+        current.selected = layoutSource.selected;
+      }
       arrange(current,layoutDraft);
     },'Раскладка применена.');
   }
   layoutDraft = null;
   layoutSource = null;
 };
-$('palette-edit').onclick = () => showPalette({...currentPalette(),name:'Своя палитра'});
+$('palette-edit').onclick = () => {
+  uploadRequest++;
+  showPalette({...currentPalette(),name:'Своя палитра'});
+};
 $('palette-dialog').onclose = () => {
   if ($('palette-dialog').returnValue === 'apply') {
     const palette = validatePalette({...paletteDraft,name:$('palette-name').value});

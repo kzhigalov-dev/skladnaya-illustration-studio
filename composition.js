@@ -234,11 +234,15 @@ const IllustrationComposition = (() => {
     return best;
   }
 
-  function compose(items, {width, height, variant = 'cluster', preserveOrder = false}) {
+  function compose(items, {width, height, variant = 'cluster', preserveOrder = false, heroId}) {
     const {art, safeZone} = canvasAreas(width, height, variant);
     if (!items.length) return {items:[], scale:1, order:[], safeZone, heroId:null};
     const input = items.map(rotatedBounds);
-    const hero = input.find(item => item.role !== 'background') || input[0];
+    const preferredHero = input.find(item => item.id === heroId);
+    const firstPrimary = input.find(item => item.role !== 'background');
+    const hero = preferredHero?.role === 'background'
+      ? firstPrimary || preferredHero
+      : preferredHero || firstPrimary || input[0];
     const order = paintOrder(input, hero, preserveOrder);
     let winner;
     let highest = -Infinity;

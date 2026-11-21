@@ -5,8 +5,9 @@ import { join, resolve } from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const target = resolve(root, 'dist');
 const files = [
-  'index.html', 'style.css', 'mark.svg', 'assets.js', 'flowers.js', 'library.js',
+  'index.html', 'style.css', 'mark.svg', 'assets.js', 'flowers.js', 'art-metrics.js', 'library.js',
   'planner.js', 'composition.js', 'studio.js', 'palette.json',
+  'semantic-protocol.js', 'local-intelligence.js', 'intelligence-worker.js',
   'demo.mp4', 'README.md',
 ];
 

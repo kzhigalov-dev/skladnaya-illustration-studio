@@ -33,6 +33,10 @@ let layoutDraft = null;
 let layoutSource = null;
 let paletteDraft = null;
 let uploadRequest = 0;
+let showGrid = false;
+let intelligenceJob = null;
+let intelligenceDraft = null;
+let intelligenceQuery = '';
 
 function status(message = '', kind = '') {
   $('status').textContent = message;
@@ -94,7 +98,8 @@ function arrange(current, variant) {
   const [width,height] = dimensions(current);
   const input = current.objects.map(item => ({
     id:item.id, key:item.key, width:catalog[item.key].width, height:catalog[item.key].height,
-    role:item.mono ? 'background' : 'main', rotation:item.angle
+    role:item.mono ? 'background' : 'main', rotation:item.angle,
+    optical:ArtMetrics[item.key][(current.detail === 'S' ? 2 : 0) + Number(item.mono)]
   }));
   if (!current.ordered) {
     const heroIndex = input.findIndex(item => item.id === current.heroId && item.role === 'main');
@@ -122,6 +127,17 @@ function renderArt(root, current, {editor = false, palette = currentPalette(curr
   defs.append(clip);
   const framing = element('g', {'clip-path':'url(#' + clipId + ')'});
   framing.append(backdrop(width, height, current.detail, palette));
+
+  if (editor && showGrid) {
+    const grid = composition.canonGrid(width,height);
+    const guides = element('g', {'data-editor':'canon','pointer-events':'none','aria-hidden':'true',
+      stroke:'#62358f','stroke-width':1,'vector-effect':'non-scaling-stroke',opacity:.35});
+    for (const x of grid.vertical) guides.append(element('line',{x1:x,y1:0,x2:x,y2:height}));
+    for (const y of grid.horizontal) guides.append(element('line',{x1:0,y1:y,x2:width,y2:y}));
+    for (const line of grid.diagonals) guides.append(element('line',line));
+    for (const point of grid.foci) guides.append(element('circle',{cx:point.x,cy:point.y,r:4,fill:'#62358f'}));
+    framing.append(guides);
+  }
 
   for (const item of current.objects) {
     const label = catalog[item.key].name;
@@ -185,7 +201,7 @@ function renderLayers() {
     const name = document.createElement('span');
     name.textContent = catalog[item.key].name;
     const role = document.createElement('span');
-    role.textContent = item.mono ? 'Фоновый' : 'Основной';
+    role.textContent = item.mono ? 'Фоновый' : item.id === scene.heroId ? 'Акцент' : 'Основной';
     button.append(thumb(item.key),name,role);
     button.onclick = () => select(item.id);
     return button;
@@ -197,6 +213,7 @@ function renderLayers() {
   $('edit').disabled = !selected;
   $('mono').checked = Boolean(selected?.mono);
   $('object-name').textContent = selected ? catalog[selected.key].name : '';
+  $('make-hero').setAttribute('aria-pressed',String(Boolean(selected && selected.id === scene.heroId)));
   const index = scene.objects.indexOf(selected);
   $('edit').querySelector('[data-op="front"]').disabled = index === scene.objects.length - 1;
   $('edit').querySelector('[data-op="rear"]').disabled = index <= 0;
@@ -219,6 +236,7 @@ function renderMode(restoreText = false) {
   $('mode').value = scene.mode;
   $('promptLabel').textContent = scene.mode === 'title' ? 'Заголовок или метафора' : 'Предметы через запятую';
   $('query').placeholder = scene.mode === 'title' ? 'Например, «Новая глава»' : 'Например, «Книга, две монеты»';
+  $('deep-analyze').hidden = scene.mode !== 'title';
   if (restoreText) $('query').value = scene.query;
   $('examples').replaceChildren(...exampleQueries[scene.mode].map(query => {
     const button = document.createElement('button');
@@ -237,6 +255,7 @@ function refresh({input = false} = {}) {
   $('dimensions').textContent = width + ' × ' + height + ' px';
   $('scene-title').textContent = scene.title;
   $('scene-meta').textContent = scene.detail + ' · SVG';
+  $('grid-toggle').setAttribute('aria-pressed',String(showGrid));
   $('empty').hidden = scene.objects.length > 0;
   $('vary').disabled = !scene.objects.length;
   $('save').disabled = !scene.objects.length;
@@ -370,6 +389,14 @@ function operate(operation) {
   const index = scene.objects.findIndex(item => item.id === scene.selected);
   if (index < 0 || (operation === 'copy' && scene.objects.length >= planner.maxObjects)) return;
   const label = catalog[scene.objects[index].key].name;
+  if (operation === 'hero') {
+    change(current => {
+      current.objects[index].mono = false;
+      current.heroId = current.objects[index].id;
+      arrange(current,current.variant);
+    },'Главный акцент — ' + label.toLowerCase() + '.');
+    return;
+  }
   change(current => {
     const item = current.objects[index];
     if (offsets[operation]) {
@@ -546,6 +573,105 @@ $('mono').onchange = () => change(current => {
   current.manual = true;
 });
 $('vary').onclick = () => openLayout();
+$('grid-toggle').onclick = () => {
+  showGrid = !showGrid;
+  renderArt(canvas,scene,{editor:true});
+  $('grid-toggle').setAttribute('aria-pressed',String(showGrid));
+};
+
+function closeIntelligence() {
+  intelligenceJob?.abort();
+  intelligenceJob = null;
+  intelligenceDraft = null;
+  $('intelligence-dialog').close();
+}
+
+$('deep-analyze').onclick = () => {
+  const query = $('query').value.trim();
+  if (!query) {
+    status('Введите заголовок для анализа.','warning');
+    $('query').focus();
+    return;
+  }
+  intelligenceQuery = query;
+  intelligenceDraft = null;
+  $('intelligence-query').textContent = query;
+  $('intelligence-status').textContent = '';
+  $('intelligence-result').hidden = true;
+  $('intelligence-progress').hidden = true;
+  $('apply-intelligence').hidden = true;
+  $('start-intelligence').hidden = false;
+  $('start-intelligence').disabled = false;
+  const engine = globalThis.LocalIllustrationIntelligence;
+  if (engine?.downloadSize) $('intelligence-requirements').textContent =
+    'Первая загрузка — ' + engine.downloadSize + '. Модель сохранится в браузере. Понадобятся интернет и поддержка WebGPU.';
+  $('start-intelligence').textContent = engine?.ready ? 'Проанализировать' : 'Загрузить и проанализировать';
+  $('intelligence-dialog').showModal();
+  engine?.availability?.().then(available => {
+    if (!available || !$('intelligence-dialog').open) return;
+    $('intelligence-requirements').textContent = 'Модель уже установлена на этом компьютере. Заголовок обрабатывается локально.';
+    $('start-intelligence').textContent = 'Проанализировать';
+  });
+};
+$('cancel-intelligence').onclick = closeIntelligence;
+$('intelligence-dialog').oncancel = event => {
+  event.preventDefault();
+  closeIntelligence();
+};
+$('start-intelligence').onclick = async () => {
+  const engine = globalThis.LocalIllustrationIntelligence;
+  if (!engine) {
+    $('intelligence-status').textContent = 'Модуль анализа не загрузился. Обновите страницу и попробуйте снова.';
+    return;
+  }
+  intelligenceJob?.abort();
+  const job = new AbortController();
+  intelligenceJob = job;
+  $('start-intelligence').disabled = true;
+  $('intelligence-progress').hidden = false;
+  $('intelligence-progress').removeAttribute('value');
+  try {
+    const result = await engine.suggest(intelligenceQuery, {
+      signal:job.signal,
+      onProgress(update) {
+        if (intelligenceJob !== job || job.signal.aborted) return;
+        $('intelligence-status').textContent = update.text || 'Анализирую заголовок…';
+        if (typeof update.progress === 'number' && update.phase === 'loading') {
+          $('intelligence-progress').value = Math.min(1,Math.max(0,update.progress));
+        } else $('intelligence-progress').removeAttribute('value');
+      }
+    });
+    if (intelligenceJob !== job || job.signal.aborted) return;
+    intelligenceDraft = result;
+    const explanation = document.createElement('p');
+    explanation.textContent = result.theme || result.message || 'Подобраны предметы.';
+    const objects = document.createElement('p');
+    objects.textContent = result.items.map(item => catalog[item.key].name +
+      (item.role === 'background' ? ' (фон)' : '')).join(', ');
+    $('intelligence-result').replaceChildren(explanation,objects);
+    $('intelligence-result').hidden = false;
+    $('apply-intelligence').hidden = !result.items.length;
+    $('start-intelligence').hidden = true;
+    $('intelligence-status').textContent = result.items.length ? 'Проверьте трактовку перед сборкой.' : 'Попробуйте уточнить заголовок.';
+  } catch (error) {
+    if (intelligenceJob === job && !job.signal.aborted) {
+      $('intelligence-status').textContent = error.message || 'Не удалось выполнить анализ. Попробуйте обычную сборку.';
+      $('start-intelligence').disabled = false;
+      $('start-intelligence').textContent = 'Повторить';
+    }
+  } finally {
+    if (intelligenceJob === job) {
+      $('intelligence-progress').hidden = true;
+      intelligenceJob = null;
+    }
+  }
+};
+$('apply-intelligence').onclick = () => {
+  if (!intelligenceDraft?.items.length) return;
+  applySuggestion(intelligenceDraft,intelligenceQuery);
+  status(intelligenceDraft.message);
+  closeIntelligence();
+};
 $('layout-dialog').onclose = () => {
   if ($('layout-dialog').returnValue === 'apply') {
     change(current => {

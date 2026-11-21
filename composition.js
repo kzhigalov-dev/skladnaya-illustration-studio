@@ -9,23 +9,42 @@ const IllustrationComposition = (() => {
   ]);
   const radians = degrees => degrees * Math.PI / 180;
   const area = box => box.width * box.height;
+  const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
   const boundsAt = (item, x, y) => ({
     ...item, x, y, left:x - item.width / 2, top:y - item.height / 2,
     right:x + item.width / 2, bottom:y + item.height / 2,
   });
 
+  function canonGrid(width, height) {
+    // Van de Graaf / the Golden Canon: mirrored page diagonals, intersections
+    // at thirds, and the 1:2 inner-to-outer margins of a ninths module.
+    const modules = [1, 2, 3, 6, 7, 8];
+    const diagonals = [
+      [0,0,1,1], [0,1,1,0],
+      [0,1,.5,0], [.5,0,1,1], [0,0,.5,1], [.5,1,1,0],
+    ].map(([x1,y1,x2,y2]) => ({x1:x1*width, y1:y1*height, x2:x2*width, y2:y2*height}));
+    return {
+      vertical:modules.map(n => width * n / 9),
+      horizontal:modules.map(n => height * n / 9),
+      diagonals,
+      foci:[1,2].flatMap(y => [1,2].map(x => ({x:width*x/3, y:height*y/3}))),
+    };
+  }
+
   function canvasAreas(width, height, variant) {
     const padding = Math.min(width, height) * .055;
     const art = {x:padding, y:padding, width:width - 2 * padding, height:height - 2 * padding};
     if (variant !== 'headline') return {art, safeZone:null};
-    const safeZone = {...art};
+    // The headline shares the canon's inner margin and a third-length split.
+    // Half a module is left between the text area and the illustration.
+    const safeZone = {x:width/9, y:height/9, width:width*2/3, height:height*2/3};
     if (width / height >= .95) {
-      safeZone.width = width * .32 - padding;
-      art.x = width * .38;
+      safeZone.width = width * 2/9;
+      art.x = width * 3.5/9;
       art.width = width - padding - art.x;
     } else {
-      safeZone.height = height * .29 - padding;
-      art.y = height * .34;
+      safeZone.height = height * 2/9;
+      art.y = height * 3.5/9;
       art.height = height - padding - art.y;
     }
     return {art, safeZone};
@@ -34,9 +53,33 @@ const IllustrationComposition = (() => {
   function rotatedBounds(item) {
     const angle = radians(item.rotation || 0);
     const {width, height} = item;
-    const cos = Math.abs(Math.cos(angle));
-    const sin = Math.abs(Math.sin(angle));
-    return {...item, width:width * cos + height * sin, height:width * sin + height * cos};
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const profile = item.optical;
+    const samples = [];
+    const rows = profile?.rows ?? [];
+    const dx = width * ((profile?.x ?? .5) - .5);
+    const dy = height * ((profile?.y ?? .5) - .5);
+    for (const [row, cells] of rows.entries()) {
+      for (let col = 0; col < cells.length; col++) {
+        const weight = parseInt(cells[col],16) / 15;
+        if (weight < .06) continue;
+        const x = width * ((col+.5)/cells.length - .5);
+        const y = height * ((row+.5)/rows.length - .5);
+        samples.push({x:x*cos-y*sin, y:x*sin+y*cos, weight, crown:y < -height*.06});
+      }
+    }
+    return {
+      ...item,
+      width:width*Math.abs(cos) + height*Math.abs(sin),
+      height:width*Math.abs(sin) + height*Math.abs(cos),
+      profile:{
+        x:dx*cos-dy*sin, y:dx*sin+dy*cos,
+        mass:width * height * (profile?.area ?? .66),
+        rows, samples, opacity:samples.reduce((sum,cell) => sum + cell.weight,0), cos, sin,
+        sourceWidth:width, sourceHeight:height
+      }
+    };
   }
 
   function envelope(boxes) {
@@ -62,15 +105,15 @@ const IllustrationComposition = (() => {
     return boundsAt(item, anchor.x + x * edge * distance, anchor.y + y * edge * distance);
   }
 
-  function preferredAngles(item, hero, variant, tall, rank) {
+  function preferredAngles(item, hero, variant, tall, rank, slope) {
     const accent = area(item) < area(hero) * .17;
     const portrait = tall ? 24 : 0;
     if (item.role === 'background') {
-      if (variant === 'diagonal') return [-139 + portrait, -152, -108];
+      if (variant === 'diagonal') return [slope - 180, slope - 159, slope - 194];
       return rank % 2 ? [-146 + portrait, -110, 152] : [-135 + portrait, -82, 154];
     }
     if (variant === 'diagonal') {
-      const diagonal = tall ? 64 : 34;
+      const diagonal = slope;
       return rank % 2 ? [diagonal - 180, -126, -172] : [diagonal, diagonal + 26, 9];
     }
     if (accent) return rank % 2 ? [25 + portrait, -26, 155] : [-47 - portrait, 47, -146];
@@ -83,7 +126,10 @@ const IllustrationComposition = (() => {
     if (hero.key !== 'book' || item.key !== 'phone' || item.role === 'background' ||
         hero.rotation || item.rotation || seedAngle !== 0) return null;
     const aspect = art.width / art.height;
-    const offsets = variant === 'diagonal' ? [.54, .36] : aspect > 1.2 ? [.57, -.06] : [.42, .19];
+    const diagonal = aspect < .91 ? [.29, .48] : [.54, .36];
+    const offsets = variant === 'diagonal' ? diagonal
+      : variant === 'headline' ? [.35, .28]
+      : aspect > 1.2 ? [.57, -.06] : [.42, .19];
     return {...boundsAt(item, hero.x + hero.width * offsets[0], hero.y + hero.height * offsets[1]), reference:true};
   }
 
@@ -100,11 +146,20 @@ const IllustrationComposition = (() => {
     return {...boundsAt(item, x, wallet.y - wallet.height * .30), reference:true};
   }
 
-  function placementPenalty(candidate, placed, hero, directionPenalty, requestedContact, targetAspect) {
+  function tallBackdrop(box) {
+    return box.role === 'background' && box.profile.opacity && box.height > box.width*1.12;
+  }
+
+  function placementPenalty(candidate, placed, hero, directionPenalty, requestedContact, targetAspect, protectCrown) {
     let overlapPenalty = 0;
     for (const other of placed) {
       const overlap = intersect(candidate, other);
-      const covered = overlap / Math.min(area(candidate), area(other));
+      const small = area(candidate) <= area(other) ? candidate : other;
+      const large = small === candidate ? other : candidate;
+      const boxOverlap = overlap / area(small);
+      const covered = placed.length < 4 && boxOverlap > .045 && small.profile.opacity && large.profile.opacity
+        ? Math.max(silhouetteCovered(small,[large]), boxOverlap * .26)
+        : boxOverlap;
       const isBackdrop = candidate.role === 'background' || other.role === 'background';
       const limit = isBackdrop ? .48 : .25;
       overlapPenalty += Math.max(0, covered - limit) * 15;
@@ -114,13 +169,16 @@ const IllustrationComposition = (() => {
       } else {
         overlapPenalty += covered * (isBackdrop ? .25 : .85);
       }
+      if (protectCrown && tallBackdrop(candidate) && other.role !== 'background') {
+        overlapPenalty += silhouetteCovered(candidate,[other],candidate.width*.075)*1.2;
+      }
     }
     const frame = envelope([...placed, candidate]);
     const aspectPenalty = Math.abs(Math.log((frame.width / frame.height) / targetAspect));
     return overlapPenalty + directionPenalty + aspectPenalty * .42;
   }
 
-  function buildCandidate(items, heroSource, art, variant, seedAngle) {
+  function buildCandidate(items, heroSource, art, variant, seedAngle, slope) {
     const hero = boundsAt(heroSource, 0, 0);
     const placed = [hero];
     const facing = art.height > art.width * 1.05;
@@ -132,10 +190,12 @@ const IllustrationComposition = (() => {
         placed.push(reference);
         continue;
       }
-      const directions = preferredAngles(item, hero, variant, facing, rank);
+      const directions = preferredAngles(item, hero, variant, facing, rank, slope);
       const accent = area(item) < area(hero) * .17;
       const backdrop = item.role === 'background';
-      const distances = backdrop ? [.64, .78, .93, 1.12]
+      const separate = backdrop && variant === 'diagonal';
+      const distances = separate ? [1.05, 1.18]
+        : backdrop ? [.64, .78, .93, 1.12]
         : accent ? [1.13, .87, 1.27]
         : [.77, .91, 1.1];
       const anchors = rank < 2 ? [hero] : placed;
@@ -147,7 +207,7 @@ const IllustrationComposition = (() => {
             const box = contact(item, anchor, direction + seedAngle, distance);
             const penalty = placementPenalty(box, placed, hero,
               directionIndex * .20 + (anchor === hero ? 0 : .1),
-              !accent, art.width / art.height);
+              !accent && !separate, art.width / art.height, variant === 'cluster' && art.width>art.height*1.3);
             if (penalty < bestPenalty) {
               best = box;
               bestPenalty = penalty;
@@ -169,8 +229,45 @@ const IllustrationComposition = (() => {
     ].map(item => item.id);
   }
 
+  function opacityAt(box, x, y) {
+    const {cos,sin,rows,sourceWidth,sourceHeight} = box.profile;
+    const dx = x - box.x, dy = y - box.y;
+    const col = dx*cos + dy*sin;
+    const row = dy*cos - dx*sin;
+    const cells = rows[Math.floor((row/sourceHeight + .5)*rows.length)];
+    if (!cells) return 0;
+    const char = cells[Math.floor((col/sourceWidth + .5)*cells.length)];
+    return char ? parseInt(char,16)/15 : 0;
+  }
+
+  function silhouetteCovered(box, foreground, crownGap = 0) {
+    let occupied = 0;
+    let tested = 0;
+    for (const sample of box.profile.samples) {
+      if (crownGap && !sample.crown) continue;
+      const x = sample.x + box.x, y = sample.y + box.y;
+      tested += sample.weight;
+      let opacity = 0;
+      for (const other of foreground) {
+        if (x < other.left-crownGap || x > other.right+crownGap || y < other.top-crownGap || y > other.bottom+crownGap) continue;
+        opacity = Math.max(opacity, other.profile.opacity ? opacityAt(other,x,y) : 1);
+        if (crownGap && other.profile.opacity) {
+          opacity = Math.max(opacity,
+            opacityAt(other,x+crownGap,y)*.65, opacityAt(other,x-crownGap,y)*.65,
+            opacityAt(other,x,y+crownGap)*.65, opacityAt(other,x,y-crownGap)*.65);
+        }
+        if (opacity === 1) break;
+      }
+      occupied += opacity * sample.weight;
+    }
+    return tested ? occupied/tested : 0;
+  }
+
   function coveredFraction(box, foreground) {
-    const overlaps = foreground.filter(other => intersect(box, other) > 0).map(other => ({
+    const crossing = foreground.filter(other => intersect(box, other) > 0);
+    if (!crossing.length) return 0;
+    if (box.profile.opacity) return silhouetteCovered(box,crossing);
+    const overlaps = crossing.map(other => ({
       left:Math.max(other.left, box.left), right:Math.min(other.right, box.right),
       top:Math.max(other.top, box.top), bottom:Math.min(other.bottom, box.bottom),
     }));
@@ -189,16 +286,60 @@ const IllustrationComposition = (() => {
     return covered / area(box);
   }
 
-  function fit(placed, art, variant) {
+  function opticalBalance(placed, frame) {
+    let x = 0, y = 0, total = 0;
+    for (const box of placed) {
+      const weight = box.profile.mass * (box.role === 'background' ? .48 : 1);
+      x += (box.x + box.profile.x - frame.left) * weight;
+      y += (box.y + box.profile.y - frame.top) * weight;
+      total += weight;
+    }
+    return {x:x/total, y:y/total};
+  }
+
+  function fit(placed, art, grid, variant, heroId) {
     const frame = envelope(placed);
-    const scale = Math.min(art.width / frame.width, art.height / frame.height);
-    const spareX = art.width - frame.width * scale;
-    const spareY = art.height - frame.height * scale;
-    const bias = variant === 'headline' ? .72 : variant === 'diagonal' ? .64 : .5;
-    const left = art.x + spareX * bias;
-    const top = art.y + spareY * bias;
+    const maxScale = Math.min(art.width / frame.width, art.height / frame.height);
+    const optical = opticalBalance(placed, frame);
+    const hero = placed.find(box => box.id === heroId);
+    const heroX = hero.x + hero.profile.x - frame.left;
+    const heroY = hero.y + hero.profile.y - frame.top;
+    const centerX = art.x + art.width/2;
+    // A compact group on a tall canvas needs an optical center, especially
+    // when snapping toward the upper focus would leave a large empty bottom.
+    const compactPortrait = variant === 'cluster' && art.height > art.width*1.15 &&
+      frame.height*maxScale < art.height*.70;
+    const centerY = art.y + art.height * (compactPortrait ? .51 : variant === 'headline' ? .50 : .47);
+    const foci = grid.foci.filter(focus => focus.x >= art.x && focus.y >= art.y);
+    const focusPull = variant === 'cluster' ? .24 : .43;
+    const verticalFocusPull = compactPortrait ? .14 : focusPull;
+    let winner;
+    let highest = -Infinity;
+    for (const fraction of [1, .96, .91]) {
+      const scale = maxScale*fraction;
+      const spareX = art.width - frame.width*scale;
+      const spareY = art.height - frame.height*scale;
+      for (const focus of foci) {
+        // Translate the whole group together, using both its visible weight and
+        // the chosen focus. Limits keep even transparent edges inside the frame.
+        const centeredX = centerX - optical.x*scale;
+        const centeredY = centerY - optical.y*scale;
+        const focusedX = focus.x - heroX*scale;
+        const focusedY = focus.y - heroY*scale;
+        const left = clamp(centeredX*(1-focusPull)+focusedX*focusPull, art.x, art.x+spareX);
+        const top = clamp(centeredY*(1-verticalFocusPull)+focusedY*verticalFocusPull, art.y, art.y+spareY);
+        const massError = Math.hypot((left-centeredX)/art.width, (top-centeredY)/art.height);
+        const focusError = Math.hypot((left-focusedX)/art.width*focusPull, (top-focusedY)/art.height*verticalFocusPull);
+        const score = Math.log(scale) - massError*.46 - focusError;
+        if (score > highest) {
+          winner = {scale,left,top,score};
+          highest = score;
+        }
+      }
+    }
+    const {scale,left,top,score} = winner;
     return {
-      scale,
+      scale, score,
       items:placed.map(box => ({id:box.id, x:left + (box.x - frame.left) * scale, y:top + (box.y - frame.top) * scale})),
     };
   }
@@ -236,7 +377,8 @@ const IllustrationComposition = (() => {
 
   function compose(items, {width, height, variant = 'cluster', preserveOrder = false, heroId}) {
     const {art, safeZone} = canvasAreas(width, height, variant);
-    if (!items.length) return {items:[], scale:1, order:[], safeZone, heroId:null};
+    const grid = canonGrid(width,height);
+    if (!items.length) return {items:[], scale:1, order:[], safeZone, grid, heroId:null};
     const input = items.map(rotatedBounds);
     const preferredHero = input.find(item => item.id === heroId);
     const firstPrimary = input.find(item => item.role !== 'background');
@@ -244,28 +386,35 @@ const IllustrationComposition = (() => {
       ? firstPrimary || preferredHero
       : preferredHero || firstPrimary || input[0];
     const order = paintOrder(input, hero, preserveOrder);
+    const slope = Math.atan2(height,width)*180/Math.PI;
     let winner;
     let highest = -Infinity;
     for (const angle of [0, -18, 18, -36, 36, 72]) {
-      const placed = buildCandidate(input, hero, art, variant, angle);
+      const placed = buildCandidate(input, hero, art, variant, angle, slope);
       const layer = order.map(id => placed.find(box => box.id === id));
       const hidden = layer.map((box, index) => coveredFraction(box, layer.slice(index + 1)));
       const overlaps = hidden.reduce((sum, fraction) => sum + fraction, 0);
       const blocked = hidden.some((fraction, index) => fraction > (layer[index].role === 'background' ? .66 : .43));
       if (blocked) continue;
-      const result = fit(placed, art, variant);
+      const result = fit(placed, art, grid, variant, hero.id);
       const sourceContact = placed.some(box => box.reference);
-      const score = Math.log(result.scale) - angle * angle * .000065 - overlaps * .16 + (sourceContact ? .21 : 0);
+      // Leave breathing room around the upper silhouette of a tall backdrop.
+      // Its lower half can still cross the foreground to connect the group.
+      const crownConflict = variant === 'cluster' && width > height*1.3
+        ? layer.reduce((sum, box, index) => sum + (tallBackdrop(box)
+          ? silhouetteCovered(box,layer.slice(index+1),box.width*.075) : 0),0)
+        : 0;
+      const score = result.score - angle * angle * .000065 - overlaps * .19 - crownConflict*.52 + (sourceContact ? .21 : 0);
       if (score > highest) {
         winner = result;
         highest = score;
       }
     }
-    const result = winner || fit(fallback(input, art), art, variant);
-    return {...result, order, safeZone, heroId:hero.id};
+    const {items:positions, scale} = winner || fit(fallback(input, art), art, grid, variant, hero.id);
+    return {items:positions, scale, order, safeZone, grid, heroId:hero.id};
   }
 
-  return {compose, variants};
+  return {compose, variants, canonGrid};
 })();
 
 if (typeof module !== 'undefined') module.exports = IllustrationComposition;

@@ -22,6 +22,12 @@ FORMATS = [(1200, 630), (1000, 1000), (800, 1200)]
 SVG = "{http://www.w3.org/2000/svg}"
 OBJECTS = "#canvas g[data-id]"
 BASELINE = "3df0740"
+CANON_CASES = [
+    ("Книга, телефон", ["book", "phone"], 0),
+    ("Фоновая лампа, кошелёк, монета", ["lamp", "wallet", "coin"], 1),
+    ("Фоновый букет, наушники", ["flowers", "phones"], 2),
+    ("Фоновая папка, ручка, книга", ["folder", "pen", "book"], 0),
+]
 CHROME = Path(os.environ.get("CHROME_PATH", "C:/Program Files/Google/Chrome/Application/chrome.exe"))
 
 
@@ -135,11 +141,11 @@ def verify_selection_and_history(page):
     assert snapshot(page) == moved
     page.click("#redo")
     assert snapshot(page) == turned
-    page.click("#library button[title='Добавить: Лампа']")
+    page.click('#library button[data-key="coin"]')
     added = snapshot(page)
-    assert added[:3] == turned and added[-1]["key"] == "lamp", added
+    assert added[:3] == turned and added[-1]["key"] == "coin", added
     page.click('[data-op="copy"]')
-    assert [layer["key"] for layer in snapshot(page)] == ["coin", "book", "coin", "lamp", "lamp"]
+    assert [layer["key"] for layer in snapshot(page)] == ["coin", "book", "coin", "coin", "coin"]
     page.check("#mono")
     assert snapshot(page)[-1]["role"] == "background"
     page.click('[data-op="rear"]')
@@ -276,9 +282,17 @@ def resume_palette_read(page):
 
 def verify_palette_race(page):
     build_scene(page, 1, "Монета")
+    original = snapshot(page)
+    book = '#library button[data-key="book"]'
+    page.click(book)
+    expect(page.locator("#layout-dialog")).to_be_visible()
+    assert snapshot(page) == original, "Oversize add changed layout before its preview was applied"
+    page.click("#cancel-layout")
+    page.wait_for_function("layoutDraft === null")
+    assert snapshot(page) == original
     palette_count = page.locator("#palette option").count()
     delay_palette_read(page)
-    page.click('#library button[data-key="book"]')
+    page.click(book)
     expect(page.locator("#layout-dialog")).to_be_visible()
     resume_palette_read(page)
     expect(page.locator("#palette-dialog")).to_be_visible()
@@ -297,6 +311,55 @@ def verify_palette_race(page):
     page.click("#cancel-palette")
     page.wait_for_function("paletteDraft === null")
     expect(page.locator("#palette option")).to_have_count(palette_count + 1)
+
+
+def verify_keyboard(page):
+    expect(page.get_by_role("combobox", name="Режим сборки")).to_be_visible()
+    expect(page.get_by_role("group", name="Холст иллюстрации")).to_be_visible()
+    first = page.locator("#layers button").first
+    layer_id = first.get_attribute("data-layer")
+    first.focus()
+    page.keyboard.press("Enter")
+    expect(page.locator(f'#layers [data-layer="{layer_id}"]')).to_be_focused()
+    before = snapshot(page)
+    page.locator("#canvas").focus()
+    page.keyboard.press("ArrowRight")
+    after = snapshot(page)
+    changed = [item["id"] for item, updated in zip(before, after, strict=True) if item != updated]
+    assert changed == [layer_id], changed
+    variants = page.locator("#vary")
+    variants.focus()
+    page.keyboard.press("Enter")
+    expect(page.locator("#layout-dialog")).to_be_visible()
+    assert page.evaluate("document.activeElement.closest('dialog')?.id") == "layout-dialog"
+    page.keyboard.press("Escape")
+    expect(page.locator("#layout-dialog")).to_be_hidden()
+    expect(variants).to_be_focused()
+    assert snapshot(page) == after
+
+
+def verify_composition_controls(page, scratch):
+    page.select_option("#format", index=1)
+    build_scene(page, 1, "Фоновый букет, наушники")
+    hero = page.locator('#layers [data-key="flowers"]')
+    expect(hero).to_have_attribute("data-role", "background")
+    hero.click()
+    page.click("#make-hero")
+    expect(page.locator("#make-hero")).to_have_attribute("aria-pressed", "true")
+    expect(hero).to_have_attribute("data-role", "main")
+    expect(hero).to_contain_text("Акцент")
+    without = download(page, scratch / "without-guides.svg")
+    inspect_svg(without, 1, ["flowers", "phones"])
+    page.click("#grid-toggle")
+    expect(page.locator("#grid-toggle")).to_have_attribute("aria-pressed", "true")
+    expect(page.locator('#canvas [data-editor="canon"]')).to_have_attribute("aria-hidden", "true")
+    with_guides = download(page, scratch / "with-guides.svg")
+    assert without.read_bytes() == with_guides.read_bytes(), "Editor grid leaked into the export"
+    page.select_option("#format", index=0)
+    expect(hero).to_contain_text("Акцент")
+    expect(page.locator('#canvas [data-editor="canon"]')).to_have_count(1)
+    page.click("#grid-toggle")
+    expect(page.locator('#canvas [data-editor="canon"]')).to_have_count(0)
 
 
 def verify_browser(browser, scratch):
@@ -326,6 +389,11 @@ def verify_browser(browser, scratch):
     expect(page.locator("#palette option:checked")).to_have_text("Шалфей")
     verify_manual_projection(page)
     verify_palette_race(page)
+    verify_keyboard(page)
+    verify_composition_controls(page, scratch)
+    for width in (320, 390, 810, 1024):
+        page.set_viewport_size({"width": width, "height": 844})
+        assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), width
     page.set_viewport_size({"width": 390, "height": 844})
     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
     page.select_option("#format", index=2)
@@ -346,29 +414,35 @@ def rasterize_svg(page, path):
     return Image.open(io.BytesIO(page.locator(".drawing").screenshot())).convert("RGB")
 
 
-def compare_layouts(browser, scratch, destination):
-    archive = subprocess.check_output(["git", "-C", str(ROOT), "archive", "--format=zip", BASELINE])
+def review_font(size):
+    try:
+        return ImageFont.truetype("arial.ttf", size)
+    except OSError:
+        return ImageFont.truetype("DejaVuSans.ttf", size)
+
+
+def compare_layouts(browser, scratch, destination, baseline):
+    archive = subprocess.check_output(["git", "-C", str(ROOT), "archive", "--format=zip", baseline])
     old_root = scratch / "baseline"
     with ZipFile(io.BytesIO(archive)) as bundle:
         bundle.extractall(old_root)
     old_page, page, render = browser.new_page(), browser.new_page(), browser.new_page()
     open_editor(old_page, old_root)
     open_editor(page)
-    cases = ["Книга, телефон", "Лампа, кошелёк, монета", "Букет, наушники", "Ручка, папка, книга"]
+    cases = ["Книга, телефон", "Лампа, кошелёк, монета", "Букет, наушники", "Ручка, папка, книга"] if (
+        baseline == BASELINE
+    ) else [query for query, _, _ in CANON_CASES]
     pairs = Image.new("RGB", (1200, 1338), "#f6f4ef")
     draw = ImageDraw.Draw(pairs)
-    try:
-        font = ImageFont.truetype("arial.ttf", 15)
-    except OSError:
-        font = ImageFont.truetype("DejaVuSans.ttf", 15)
-    order = random.Random(762)
+    font = review_font(15)
+    order = random.Random(762 if baseline == BASELINE else 1137)
     key = []
     for prompt_index, prompt in enumerate(cases):
         for format_index, (width, height) in enumerate(FORMATS):
             position = prompt_index * 3 + format_index
             x, y = position % 2 * 600, position // 2 * 223
             entries = []
-            for version, editor in [("v1", old_page), ("v2", page)]:
+            for version, editor in [(baseline, old_page), ("candidate", page)]:
                 editor.select_option("#format", index=format_index)
                 build_scene(editor, 1, prompt)
                 path = download(editor, scratch / f"{version}-{position}.svg")
@@ -389,15 +463,53 @@ def compare_layouts(browser, scratch, destination):
     print(f"Blind review saved to {destination}. Answer key is adjacent.")
 
 
+def render_canon(browser, scratch, destination):
+    editor, render = browser.new_page(), browser.new_page()
+    open_editor(editor)
+    labels = ("В фокусе", "Диагональ", "Под заголовок")
+    columns = (64, 366, 668)
+    row_height = 221
+    sheet = Image.new("RGB", (964, 72 + row_height * len(FORMATS) * len(CANON_CASES)), "#f6f4ef")
+    draw = ImageDraw.Draw(sheet)
+    heading, body = review_font(23), review_font(15)
+    draw.text((24, 12), "Редакционная сетка · четыре состава, три формата, три раскладки", font=heading, fill="#242724")
+    for x, label in zip(columns, labels, strict=True):
+        draw.text((x, 48), label, font=body, fill="#585269")
+    for case_index, (query, expected, palette) in enumerate(CANON_CASES):
+        for format_index, (width, height) in enumerate(FORMATS):
+            row = case_index * len(FORMATS) + format_index
+            top = 72 + row * row_height
+            editor.select_option("#format", index=format_index)
+            editor.select_option("#palette", index=palette)
+            build_scene(editor, 1, query)
+            draw.text((24, top + 8), f"{query} · {width}×{height}", font=body, fill="#242724")
+            for variant_index, x in enumerate(columns):
+                apply_layout(editor, variant_index)
+                item = download(editor, scratch / f"canon-{row}-{variant_index}.svg")
+                inspect_svg(item, format_index, expected)
+                drawing = rasterize_svg(render, item)
+                sheet.paste(drawing, (x + (260-drawing.width)//2, top + 32 + (182-drawing.height)//2))
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    sheet.save(destination)
+    editor.close()
+    render.close()
+    print(f"36 vector-backed compositions rendered to {destination}")
+
+
 def main():
     command = argparse.ArgumentParser(description=__doc__)
-    command.add_argument("--review", type=Path, help="Write 12 unlabelled comparisons and an answer key")
+    options = command.add_mutually_exclusive_group()
+    options.add_argument("--review", type=Path, help="Write 12 unlabelled comparisons and an answer key")
+    options.add_argument("--canon", type=Path, help="Render the canonical composition grid from actual SVG exports")
+    command.add_argument("--baseline", default=BASELINE, help="Baseline git ref used by --review")
     args = command.parse_args()
     with sync_playwright() as driver, TemporaryDirectory() as temp:
         browser = driver.chromium.launch(executable_path=CHROME if CHROME.exists() else None)
         scratch = Path(temp)
         if args.review:
-            compare_layouts(browser, scratch, args.review)
+            compare_layouts(browser, scratch, args.review, args.baseline)
+        elif args.canon:
+            render_canon(browser, scratch, args.canon)
         else:
             verify_browser(browser, scratch)
         browser.close()

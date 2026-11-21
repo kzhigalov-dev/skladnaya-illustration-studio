@@ -496,7 +496,12 @@ const IllustrationPlanner = (() => {
     };
   }
 
-  return Object.freeze({ labels, maxObjects, parseObjects, interpretTitle });
+  function excludedKeys(input) {
+    const tokens = tokensOf(String(input ?? '').trim().slice(0, maxInput));
+    return [...readNegation(tokens).keys];
+  }
+
+  return Object.freeze({ labels, maxObjects, parseObjects, interpretTitle, excludedKeys });
 })();
 
 if (typeof module === 'object' && module.exports) module.exports = IllustrationPlanner;

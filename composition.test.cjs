@@ -5,20 +5,21 @@ const {readFileSync} = require('node:fs');
 const {join} = require('node:path');
 const {test} = require('node:test');
 const vm = require('node:vm');
-const {compose, variants} = require('./composition.js');
+const {compose, variants, canonGrid} = require('./composition.js');
 
 const context = vm.createContext({});
-for (const filename of ['assets.js', 'flowers.js']) {
+for (const filename of ['assets.js', 'flowers.js', 'art-metrics.js']) {
   vm.runInContext(readFileSync(join(__dirname, filename), 'utf8'), context);
 }
 const art = vm.runInContext('ART', context);
+const metrics = vm.runInContext('ArtMetrics', context);
 const keys = Object.keys(art).filter(key => key !== 'back');
 const formats = [[1200, 630], [1000, 1000], [800, 1200]];
 const referenceScenes = [['book', 'phone'], ['wallet', 'coin', 'lamp'], ['phones', 'flowers']];
 
 function item(key, id, role = 'main', rotation = 0) {
   const [width, height] = art[key][0].match(/viewBox="([^"]+)"/)[1].split(' ').slice(2).map(Number);
-  return {key, id, role, rotation, width, height};
+  return {key, id, role, rotation, width, height, optical:metrics[key][Number(role === 'background')]};
 }
 
 function fittedBounds(layer, position, scale) {
@@ -94,4 +95,33 @@ test('the main subject survives layer reordering independently of paint order', 
   layers[1].role = 'background';
   assert.equal(compose(layers, options).heroId, 2);
   assert.equal(compose([layers[0]], options).heroId, 2);
+});
+
+test('canon lines, focal intersections and the headline area follow the same canvas modules', () => {
+  for (const [width, height] of formats) {
+    const grid = canonGrid(width, height);
+    assert.deepEqual(grid.vertical, [1, 2, 3, 6, 7, 8].map(n => width*n/9));
+    assert.deepEqual(grid.horizontal, [1, 2, 3, 6, 7, 8].map(n => height*n/9));
+    for (const {x,y} of grid.foci) {
+      const linesThroughFocus = grid.diagonals.filter(({x1,y1,x2,y2}) => {
+        const crossProduct = (x-x1)*(y2-y1) - (y-y1)*(x2-x1);
+        return Math.abs(crossProduct) < .001 && x >= x1 && x <= x2;
+      });
+      assert.ok(linesThroughFocus.length >= 2);
+    }
+    const {safeZone} = compose([item('book', 1)], {width, height, variant:'headline'});
+    assert.equal(safeZone.x, width/9);
+    assert.equal(safeZone.y, height/9);
+    assert.equal(width >= height ? safeZone.width : safeZone.height, (width >= height ? width : height)*2/9);
+  }
+});
+
+test('optical centering compensates for asymmetric silhouettes without changing scale', () => {
+  const lightLeft = {id:1, width:300, height:500, optical:{x:.2,y:.5,area:.5}};
+  const lightRight = {...lightLeft, optical:{...lightLeft.optical,x:.8}};
+  const options = {width:1200,height:630,variant:'cluster'};
+  const left = compose([lightLeft], options);
+  const right = compose([lightRight], options);
+  assert.equal(left.scale, right.scale);
+  assert.ok(left.items[0].x > right.items[0].x);
 });

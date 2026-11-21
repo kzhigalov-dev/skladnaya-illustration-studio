@@ -5,11 +5,14 @@ const fixtures = {
   '--third': './held-out-v3.json',
   '--final': './held-out-final.json',
   '--paraphrase': './paraphrase-final.json',
+  '--fresh': './fresh-40.json',
+  '--validation': './validation-40.json',
 };
 const requested = process.argv.find(arg => Object.hasOwn(fixtures, arg));
 const cases = require(fixtures[requested] || './held-out.json');
 const expectedKinds = ['literal', 'metaphor', 'ambiguous', 'unfit'];
-const planner = require('../planner.js');
+const plannerIndex = process.argv.indexOf('--planner');
+const planner = require(plannerIndex < 0 ? '../planner.js' : require('node:path').resolve(process.argv[plannerIndex + 1]));
 const keys = new Set(['book', 'coin', 'flowers', 'folder', 'lamp', 'pen', 'phone', 'phones', 'puzzle', 'wallet']);
 const totals = Object.fromEntries(expectedKinds.map(kind => [kind, { passed: 0, total: 0 }]));
 
